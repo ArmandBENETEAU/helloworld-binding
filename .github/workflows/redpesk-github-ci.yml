@@ -5,8 +5,10 @@ on: [pull_request, workflow_dispatch]
 env:
   RP_REMOTE_FACTORY_URL: 'https://community-app.redpesk.bzh'
   RP_REMOTE_FACTORY_TOKEN: ${{ secrets.RP_REMOTE_FACTORY_TOKEN }}
-  RP_FACTORY_PROJECT: ''
-  RP_FACTORY_APP: ''
+  RP_FACTORY_PROJECT: 'github-ci-project'
+  RP_FACTORY_APP: 'helloworld-binding'
+  RP_SOURCE_BRANCH: ${{ github.head_ref }}
+  RP_TARGET_BRANCH: ${{ github.base_ref }}
 
 jobs:
   build-application:
@@ -20,6 +22,9 @@ jobs:
           factory-url: "$RP_REMOTE_FACTORY_URL"
           factory-token: "$RP_REMOTE_FACTORY_TOKEN"
       - name: Change branch in factory to source branch
-        run: rp-cli applications update "$RP_FACTORY_APP" -p "$RP_FACTORY_PROJECT" --source-rev {{ github.head_ref }}
+        run: rp-cli applications update "$RP_FACTORY_APP" -p "$RP_FACTORY_PROJECT" --source-rev "$RP_SOURCE_BRANCH"
       - name: Run application build in redpesk factory
         run: rp-cli applications build "$RP_FACTORY_APP" -p "$RP_FACTORY_PROJECT" -v
+      - name: Handle possible failure
+        if: ${{ failure() }}
+        run: rp-cli applications update "$RP_FACTORY_APP" -p "$RP_FACTORY_PROJECT" --source-rev "$RP_TARGET_BRANCH"

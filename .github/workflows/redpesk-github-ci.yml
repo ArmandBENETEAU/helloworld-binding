@@ -12,6 +12,8 @@ jobs:
   build-application:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
       - name: Install redpesk-cli in the runner
         uses: ./.github/actions/install-rpcli
         with:

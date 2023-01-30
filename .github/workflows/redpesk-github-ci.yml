@@ -1,6 +1,13 @@
 name: redpesk-github-ci
 run-name: ${{ github.actor }} has started a Github action
-on: [pull_request]
+on: [pull_request, workflow_dispatch]
+
+env:
+  RP_INSTALL_RPCLI_URL: https://raw.githubusercontent.com/redpesk-devtools/redpesk-sdk-tools/master/install-redpesk-sdk.sh
+  RP_REMOTE_FACTORY_NAME: my-community-factory
+  RP_REMOTE_FACTORY_URL: https://community-app.redpesk.bzh
+  RP_REMOTE_FACTORY_TOKEN: ${{ secrets.RP_REMOTE_FACTORY_TOKEN }}
+
 jobs:
   build-application:
     runs-on: ubuntu-latest
